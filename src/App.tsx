@@ -218,10 +218,16 @@ function App() {
   const [bookingOpen, setBookingOpen] = useState(false)
   const [bookingBarberId, setBookingBarberId] = useState('')
   const [bookingServiceId, setBookingServiceId] = useState('')
-  const [adminOpen, setAdminOpen] = useState(false)
+  const [adminOpen, setAdminOpen] = useState(() => /^\/painel\/?$/.test(window.location.pathname))
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [session, setSession] = useState<Awaited<ReturnType<NonNullable<typeof supabase>['auth']['getSession']>>['data']['session']>(null)
   const [sessionLoading, setSessionLoading] = useState(Boolean(supabase))
+
+  useEffect(() => {
+    const syncRoute = () => setAdminOpen(/^\/painel\/?$/.test(window.location.pathname))
+    window.addEventListener('popstate', syncRoute)
+    return () => window.removeEventListener('popstate', syncRoute)
+  }, [])
 
   useEffect(() => {
     if (!supabase) return
@@ -305,6 +311,7 @@ function App() {
     setMobileMenuOpen(false)
   }
   const publicView = () => {
+    if (window.location.pathname !== '/') window.history.pushState({}, '', '/')
     setAdminOpen(false)
     setMobileMenuOpen(false)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -323,7 +330,6 @@ function App() {
               const { error } = await supabase.auth.signOut()
               if (error) return false
               setSession(null)
-              setAdminOpen(false)
               return true
             }}
           />
@@ -346,9 +352,6 @@ function App() {
               <a href="#galeria" onClick={() => setMobileMenuOpen(false)}>Galeria</a>
               <a href="#sobre" onClick={() => setMobileMenuOpen(false)}>A barbearia</a>
               <a href="#visite" onClick={() => setMobileMenuOpen(false)}>Como chegar</a>
-              <button className="nav-owner" onClick={() => { setAdminOpen(true); setMobileMenuOpen(false) }}>
-                <LockKeyhole size={14} /> Área do dono
-              </button>
               <button className="button button-dark nav-book" onClick={openBooking}>Agendar horário <ArrowUpRight size={16} /></button>
             </nav>
           </header>
@@ -428,7 +431,6 @@ function App() {
             <div className="footer-links">
               {<a href={`https://wa.me/${(settings?.whatsapp || "5521982464611").replace(/\D/g, '')}`} target="_blank" rel="noreferrer"><Phone size={15} /> WhatsApp</a>}
               <a href="https://www.instagram.com/barbearianata/" target="_blank" rel="noreferrer">Instagram <ArrowUpRight size={14} /></a>
-              <button onClick={() => setAdminOpen(true)}>Área do dono <ArrowUpRight size={14} /></button>
             </div>
             <span className="footer-copy">© {currentYear} Barbearia do Natã Garcia</span>
           </footer>
