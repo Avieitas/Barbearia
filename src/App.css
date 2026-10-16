@@ -374,7 +374,7 @@ button { cursor: pointer; }
 .hero-side-label { display: none; }
 .eyebrow-light { color: #b7c5d7; }
 .hero-scroll { background: #102b50; }
-.hero::after { border-bottom: 5px solid transparent; border-image: linear-gradient(90deg,#bb3944 33%,#f6f4f0 33%,#f6f4f0 66%,#173f70 66%) 1; }
+.hero::after { border-bottom: 5px solid #bb3944; border-image: none; }
 .intro-strip { background: #e9edf1; }
 .strip-item { color: #233c57; }
 .strip-signature { color: #102b50; }
