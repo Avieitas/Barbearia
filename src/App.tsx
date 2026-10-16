@@ -263,6 +263,42 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    if (adminOpen || !('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('.section-heading, .team-card, .service-card, .gallery-item, .about-image, .about-copy, .visit-head, .location-map, .visit-bottom'))
+    nodes.forEach(el => {
+      el.classList.add('reveal-item')
+      if (el.matches('.team-card, .gallery-item, .service-card')) el.style.setProperty('--reveal-delay', `${Array.from(el.parentElement!.children).indexOf(el) % 4 * 100}ms`)
+    })
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed')
+          observer.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.12 })
+    nodes.forEach(el => observer.observe(el))
+    const hero = document.querySelector<HTMLElement>('.hero')
+    const header = document.querySelector<HTMLElement>('.site-header')
+    let frame = 0
+    const update = () => {
+      frame = 0
+      if (hero) hero.style.setProperty('--hero-shift', `${Math.min(window.scrollY * .13, 65)}px`)
+      header?.classList.toggle('has-scrolled', window.scrollY > 20)
+    }
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update) }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    update()
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(frame)
+      nodes.forEach(el => el.classList.remove('reveal-item', 'is-revealed'))
+      hero?.style.removeProperty('--hero-shift')
+    }
+  }, [adminOpen, services])
+
   const openBooking = () => {
     setBookingBarberId('')
     setBookingOpen(true)
@@ -325,7 +361,7 @@ function App() {
             <div className="hero-photo" role="img" aria-label="Equipe da Barbearia Natã Garcia em frente à fachada" />
             <div className="hero-content">
               <p className="eyebrow eyebrow-light"><span className="eyebrow-dot" /> Atlântica / Rio das Ostras</p>
-              <h1>Seu estilo.<br />Nossa <em>assinatura.</em></h1>
+              <h1><span className="hero-line">Seu estilo.</span><span className="hero-line">Nossa <em>assinatura.</em></span></h1>
               <p className="hero-copy">Corte alinhado, barba no detalhe e uma equipe que entende do seu estilo. Chega mais, a casa é sua.</p>
               <a className="button button-clay hero-cta" href="#equipe">Escolher meu horário <ArrowRight size={16} /></a>
               <div className="hero-note"><span className="hero-note-line" /> UMA BARBEARIA DO BAIRRO, FEITA PRA VOCÊ</div>
@@ -334,14 +370,7 @@ function App() {
             <a href="#servicos" className="hero-scroll" aria-label="Ver serviços"><ArrowDownRight size={20} /></a>
           </section>
 
-          <section className="intro-strip">
-            <div className="strip-item"><span className="strip-number">01</span><span>Um atendimento<br />sem correria.</span></div>
-            <div className="strip-divider" />
-            <div className="strip-item"><span className="strip-number">02</span><span>O corte certo<br />pra você.</span></div>
-            <div className="strip-divider" />
-            <div className="strip-item"><span className="strip-number">03</span><span>No coração<br />do Atlântica.</span></div>
-            <p className="strip-signature">Chega mais.<br /><em>Seu próximo corte é aqui.</em></p>
-          </section>
+          <div className="motion-ribbon" aria-label="Corte, barba e estilo. Barbearia Natã Garcia, Rio das Ostras."><div className="ribbon-track">{[0, 1].map(copy => <div className="ribbon-content" key={copy} aria-hidden="true"><span>Corte</span><Scissors size={18} /><span>Barba</span><span className="ribbon-star">✦</span><span>Seu estilo, nossa assinatura</span><span className="ribbon-star">✦</span><span>Natã Garcia</span><Scissors size={18} /><span>Rio das Ostras</span><span className="ribbon-star">✦</span></div>)}</div></div>
 
           <section className="services-section section-wrap" id="servicos">
             <div className="section-heading">
