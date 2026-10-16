@@ -356,7 +356,6 @@ function App() {
           <section className="hero">
             <div className="hero-photo" role="img" aria-label="Equipe da Barbearia Natã Garcia em frente à fachada" />
             <div className="hero-content">
-              <p className="eyebrow eyebrow-light"><span className="eyebrow-dot" /> Atlântica / Rio das Ostras</p>
               <h1><span className="hero-line">Seu estilo.</span><span className="hero-line">Nossa <em>assinatura.</em></span></h1>
               <p className="hero-copy">Corte alinhado, barba no detalhe e uma equipe que entende do seu estilo. Chega mais, a casa é sua.</p>
               <a className="button button-clay hero-cta" href="#servicos">Escolher meu horário <ArrowRight size={16} /></a>
@@ -366,7 +365,7 @@ function App() {
             <a href="#servicos" className="hero-scroll" aria-label="Ver serviços"><ArrowDownRight size={20} /></a>
           </section>
 
-          <div className="motion-ribbon" aria-label="Corte, barba e estilo. Barbearia Natã Garcia, Rio das Ostras."><div className="ribbon-track">{[0, 1].map(copy => <div className="ribbon-content" key={copy} aria-hidden="true"><span>Corte</span><Scissors size={18} /><span>Barba</span><span className="ribbon-star">✦</span><span>Seu estilo, nossa assinatura</span><span className="ribbon-star">✦</span><span>Natã Garcia</span><Scissors size={18} /><span>Rio das Ostras</span><span className="ribbon-star">✦</span></div>)}</div></div>
+          <div className="motion-ribbon" aria-label="Corte, barba e sobrancelha. Barbearia Natã Garcia, Rio das Ostras."><div className="ribbon-track">{[0, 1].map(copy => <div className="ribbon-content" key={copy} aria-hidden="true"><span>Corte</span><Scissors size={18} /><span>Barba</span><span className="ribbon-star">✦</span><span>Sobrancelha</span><span className="ribbon-star">✦</span><span>Natã Garcia</span><Scissors size={18} /><span>Rio das Ostras</span><span className="ribbon-star">✦</span></div>)}</div></div>
 
           <section className="booking-builder section-wrap" id="servicos">
             <div className="builder-services">

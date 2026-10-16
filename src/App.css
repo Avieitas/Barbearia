@@ -405,7 +405,7 @@ a.button, a.text-link { text-decoration: none; }
 .map-card { max-width: 430px; }
 .map-card span { line-height: 1.6; }
 .visit-hours small { line-height: 1.6; }
-@media (min-width: 1500px) { .hero-photo { background-size: contain; background-repeat: no-repeat; background-color: #081627; } }
+@media (min-width: 1500px) { .hero-photo { background-size: cover; background-repeat: no-repeat; background-color: #0a1d36; } }
 @media (max-width: 1180px) { .service-list { column-gap: 28px; } .service-card { grid-template-columns: 1fr 95px 28px; gap: 8px; padding: 20px 0; } .service-index { display:none; } .service-duration { grid-column:1; grid-row:2; } .service-price { grid-column:2; grid-row:1; } .service-arrow { grid-column:3; grid-row:1; } .hero-content { padding-left: 12%; } .main-nav { gap: 18px; } }
 @media (max-width: 760px) {
  .site-header { height:80px; } .brand-logo { width:46px; height:46px; }
@@ -525,14 +525,13 @@ a.text-link-light:hover {background:#ecdcf5;color:#63337e;}
 .instagram-pill:hover svg {transform:rotate(-10deg) scale(1.12);}
 @media(prefers-reduced-motion:no-preference) {
  .ribbon-track {animation:ribbon-flow 28s linear infinite;}
- .motion-ribbon:hover .ribbon-track {animation-play-state:paused;}
  @keyframes ribbon-flow {to {transform:translateX(-50%);}}
  .hero-content {animation:none;}
  .hero-line {animation:line-rise 1s cubic-bezier(.22,1,.36,1) both;}
  .hero-line:nth-child(2) {animation-delay:.18s;}
  .hero-copy {animation:line-rise 1s .35s cubic-bezier(.22,1,.36,1) both;}
  .hero-cta {animation:line-rise 1s .5s cubic-bezier(.22,1,.36,1) both;}
- .hero-photo {transform:translateY(var(--hero-shift,0px)) scale(1.12);transform-origin:center 45%;will-change:transform;animation:photo-arrive 1.4s cubic-bezier(.22,1,.36,1) both;}
+ .hero-photo {transform:none;background-position:center calc(43% + var(--hero-shift,0px));animation:photo-arrive 1.4s cubic-bezier(.22,1,.36,1) both;}
  @keyframes photo-arrive {from {opacity:0;filter:blur(5px);}to {opacity:1;filter:blur(0);}}
  @keyframes line-rise {from {opacity:0;transform:translateY(35px);filter:blur(4px);}to {opacity:1;transform:none;filter:blur(0);}}
  .reveal-item {opacity:0;transform:translateY(48px) scale(.98);transition:opacity .85s cubic-bezier(.22,1,.36,1) var(--reveal-delay,0ms),transform .85s cubic-bezier(.22,1,.36,1) var(--reveal-delay,0ms);}
@@ -575,3 +574,22 @@ a.text-link-light:hover {background:#ecdcf5;color:#63337e;}
 .builder-summary>small {display:block;font-size:10px;color:#657184;line-height:1.6;margin-top:12px;}
 @media(max-width:1050px) {.booking-builder {gap:30px;padding-inline:6%;}.booking-builder h2 {font-size:38px;}}
 @media(max-width:760px) {.booking-builder {grid-template-columns:1fr;gap:35px;padding:42px 7%;}.builder-team {position:static;}.builder-barbers {gap:10px;}.builder-summary {margin-top:20px;padding:20px;}.builder-service {padding-inline:8px;}}
+
+.hero {background:#0a1d36;}
+.hero-content {background:transparent;}
+.hero-photo {background-color:#0a1d36;}
+
+/* Foto da equipe em toda a abertura, sob uma camada azul. */
+.hero {display:block;background:#0a1d36;isolation:isolate;}
+.hero-photo {position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;background-image:linear-gradient(90deg,rgba(10,29,54,.94) 0%,rgba(10,29,54,.78) 40%,rgba(10,29,54,.4) 100%),url('/equipe-nata.jpg');background-size:cover;background-position:center 46%;opacity:1;z-index:-1;}
+.hero-content {width:58%;max-width:760px;padding:48px 5% 40px 8%;background:transparent;}
+@media(min-width:1500px) {.hero-photo {background-size:cover;background-color:#0a1d36;}}
+@media(max-width:760px) {
+ .hero {display:block;min-height:370px;}
+ .hero-photo {inset:0;width:100%;height:100%;background-image:linear-gradient(90deg,rgba(10,29,54,.9),rgba(10,29,54,.66)),url('/equipe-nata.jpg');background-position:center 47%;opacity:1;}
+ .hero-content {width:100%;max-width:440px;padding:32px 7% 34px;}
+ .hero h1 {font-size:42px;}
+ .hero h1 em {display:inline;}
+ .hero-copy {font-size:12px;max-width:310px;}
+ .hero .eyebrow {max-width:none;}
+}
