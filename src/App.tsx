@@ -416,7 +416,6 @@ function App() {
             </div>
             <iframe className="location-map" title="Localização da Barbearia Natã Garcia no Google Maps" src="https://maps.google.com/maps?q=Barbearia%20Nat%C3%A3%20Garcia%2C%20Av.%20Alcebiades%20Sabino%20dos%20Santos%20353%2C%20Rio%20das%20Ostras&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
             <div className="visit-bottom">
-              <p>Passa pra tomar um café. Fica pra fazer o corte.</p>
               <div className="visit-hours"><Clock3 size={16} /><span>Seg a sex · 09h às 19h30<small>Sábado · 09h às 17h</small><small>Domingo · 09h às 13h</small></span></div>
               <button className="button button-dark" onClick={openBooking}>Reservar meu horário <ArrowRight size={16} /></button>
             </div>
