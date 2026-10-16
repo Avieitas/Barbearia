@@ -217,6 +217,7 @@ function App() {
   const [loading, setLoading] = useState(Boolean(supabase))
   const [bookingOpen, setBookingOpen] = useState(false)
   const [bookingBarberId, setBookingBarberId] = useState('')
+  const [bookingServiceId, setBookingServiceId] = useState('')
   const [adminOpen, setAdminOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [session, setSession] = useState<Awaited<ReturnType<NonNullable<typeof supabase>['auth']['getSession']>>['data']['session']>(null)
@@ -300,13 +301,8 @@ function App() {
   }, [adminOpen, services])
 
   const openBooking = () => {
-    setBookingBarberId('')
-    setBookingOpen(true)
-  }
-  const bookWithBarber = (name: string) => {
-    const barber = barbers.find(person => person.name === name || person.name.startsWith(`${name} `))
-    setBookingBarberId(barber?.id ?? '')
-    setBookingOpen(true)
+    document.getElementById('servicos')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
+    setMobileMenuOpen(false)
   }
   const publicView = () => {
     setAdminOpen(false)
@@ -363,7 +359,7 @@ function App() {
               <p className="eyebrow eyebrow-light"><span className="eyebrow-dot" /> Atlântica / Rio das Ostras</p>
               <h1><span className="hero-line">Seu estilo.</span><span className="hero-line">Nossa <em>assinatura.</em></span></h1>
               <p className="hero-copy">Corte alinhado, barba no detalhe e uma equipe que entende do seu estilo. Chega mais, a casa é sua.</p>
-              <a className="button button-clay hero-cta" href="#equipe">Escolher meu horário <ArrowRight size={16} /></a>
+              <a className="button button-clay hero-cta" href="#servicos">Escolher meu horário <ArrowRight size={16} /></a>
               <div className="hero-note"><span className="hero-note-line" /> UMA BARBEARIA DO BAIRRO, FEITA PRA VOCÊ</div>
             </div>
             <div className="hero-side-label">BARBEARIA DO NATÃ GARCIA <span>·</span> CORTE · BARBA · ESTILO</div>
@@ -372,43 +368,22 @@ function App() {
 
           <div className="motion-ribbon" aria-label="Corte, barba e estilo. Barbearia Natã Garcia, Rio das Ostras."><div className="ribbon-track">{[0, 1].map(copy => <div className="ribbon-content" key={copy} aria-hidden="true"><span>Corte</span><Scissors size={18} /><span>Barba</span><span className="ribbon-star">✦</span><span>Seu estilo, nossa assinatura</span><span className="ribbon-star">✦</span><span>Natã Garcia</span><Scissors size={18} /><span>Rio das Ostras</span><span className="ribbon-star">✦</span></div>)}</div></div>
 
-          <section className="services-section section-wrap" id="servicos">
-            <div className="section-heading">
-              <div>
-                <p className="eyebrow"><span className="eyebrow-dot" /> Serviços e valores</p>
-                <h2>Um bom corte<br /><em>muda o dia.</em></h2>
-              </div>
-              <div className="section-aside">
-                <p>Escolha o que combina com você. A gente cuida do resto.</p>
-                <span><Clock3 size={14} /> Atendimento com hora marcada</span>
-              </div>
+          <section className="booking-builder section-wrap" id="servicos">
+            <div className="builder-services">
+              <div className="section-heading"><div><p className="eyebrow">01 / Escolha seu serviço</p><h2>Um bom corte<br /><em>muda o dia.</em></h2></div></div>
+              {dataError && <p className="inline-notice" role="status">{dataError}</p>}
+              {loading ? <p className="services-loading"><LoaderCircle className="spin" size={18} /> Carregando serviços...</p> : <div className="builder-service-list" role="group" aria-label="Escolha um serviço">{services.map(service => <button key={service.id} className={'builder-service' + (bookingServiceId === service.id ? ' selected' : '')} aria-pressed={bookingServiceId === service.id} onClick={() => setBookingServiceId(service.id)}><span className="selection-circle">{bookingServiceId === service.id && <Check size={13} />}</span><span className="builder-service-name"><strong>{service.name}</strong><small>{service.duration_min} min</small></span><span className="builder-price">{service.priceLabel || money(service.price)}</span></button>)}</div>}
+              <p className="builder-price-note">Valores “a partir de” podem variar. Serviços sob consulta têm o valor confirmado com a barbearia.</p>
             </div>
-            {dataError && <p className="inline-notice" role="status">{dataError}</p>}
-            
-            {loading && supabaseConfigured ? (
-              <div className="services-loading"><LoaderCircle className="spin" size={18} /> Carregando serviços...</div>
-            ) : (
-              <div className="service-list">
-                {services.map((service, index) => (
-                  <article className="service-card" key={service.id}>
-                    <div className="service-index">{String(index + 1).padStart(2, "0")}</div>
-                    <div className="service-main">
-                      <h3>{service.name}</h3>
-                      <p>{service.description}</p>
-                    </div>
-                    <span className="service-duration">{service.duration_min} min</span>
-                    <div className="service-price">{service.priceLabel || money(service.price)}</div>
-                    <button className="service-arrow" onClick={openBooking} aria-label={`Agendar ${service.name}`}><ArrowUpRight size={17} /></button>
-                  </article>
-                ))}
-              </div>
-            )}
-            <div className="services-footnote"><Scissors size={15} /> Valores sujeitos a confirmação. Serviços indicados como “a partir de” podem variar conforme o atendimento.</div>
-          </section>
-
-          <section className="team-section section-wrap" id="equipe">
-            <div className="section-heading"><div><p className="eyebrow"><span className="eyebrow-dot" /> Nossos barbeiros</p><h2>Seu próximo corte.<br /><em>Em boas mãos.</em></h2></div><p className="team-intro">Conheça os profissionais da casa e escolha com quem marcar seu horário.</p></div>
-            <div className="team-grid">{team.map(person => <article className="team-card" key={person.name}><button className="team-portrait" onClick={() => bookWithBarber(person.name)} aria-label={'Agendar com ' + person.name}><img src={person.photo} alt={person.name + ', barbeiro'} loading="lazy" /><span className="team-book-label">Agendar com {person.name}</span></button><div className="team-info"><div><h3>{person.name}</h3><p>BARBEIRO</p></div><button className="service-arrow" onClick={() => bookWithBarber(person.name)} aria-label={'Ver agenda de ' + person.name}><ArrowUpRight size={20} /></button></div></article>)}</div>
+            <div className="builder-team" id="equipe">
+              <div className="section-heading"><div><p className="eyebrow">02 / Escolha seu barbeiro</p><h2>Quem cuida<br /><em>do seu estilo?</em></h2></div></div>
+              <div className="builder-barbers" role="group" aria-label="Escolha um barbeiro">{barbers.map(barber => {
+                const person = team.find(person => barber.name === person.name || barber.name.startsWith(person.name + ' '))
+                return <button key={barber.id} className={'builder-barber' + (bookingBarberId === barber.id ? ' selected' : '')} aria-pressed={bookingBarberId === barber.id} onClick={() => setBookingBarberId(barber.id)}>{person ? <img src={person.photo} alt={barber.name} loading="lazy" /> : <span className="barber-placeholder"><Scissors size={24} /></span>}<span className="builder-barber-bottom"><strong>{barber.name}</strong><span className="selection-circle">{bookingBarberId === barber.id && <Check size={13} />}</span></span></button>
+              })}</div>
+              {!loading && !barbers.length && <p className="builder-price-note">Não há profissionais disponíveis no momento.</p>}
+              <div className="builder-summary"><p className="eyebrow">Seu atendimento</p><p aria-live="polite">{services.find(service => service.id === bookingServiceId)?.name || 'Escolha um serviço'}<span> com </span>{barbers.find(barber => barber.id === bookingBarberId)?.name || 'seu barbeiro'}</p><button className="button button-clay" disabled={!services.some(service => service.id === bookingServiceId) || !barbers.some(barber => barber.id === bookingBarberId)} onClick={() => setBookingOpen(true)}>Escolher dia e horário <CalendarDays size={17} /></button><small>Você escolhe a data e confirma seus dados na próxima etapa.</small></div>
+            </div>
           </section>
 
           <WorkGallery />
@@ -465,6 +440,7 @@ function App() {
         <BookingModal
           services={services}
           initialBarberId={bookingBarberId}
+          initialServiceId={bookingServiceId}
           barbers={barbers}
           onClose={() => setBookingOpen(false)}
         />
@@ -484,11 +460,11 @@ function WorkGallery() {
   </section>
 }
 
-function BookingModal({ services, barbers, initialBarberId, onClose }: { services: ShopService[]; barbers: Barber[]; initialBarberId: string; onClose: () => void }) {
-  const [draft, setDraft] = useState<BookingDraft>({ serviceId: '', barberId: initialBarberId, date: localDate(), time: '', name: '', phone: '' })
-  const [step, setStep] = useState(1)
+function BookingModal({ services, barbers, initialBarberId, initialServiceId, onClose }: { services: ShopService[]; barbers: Barber[]; initialBarberId: string; initialServiceId: string; onClose: () => void }) {
+  const [draft, setDraft] = useState<BookingDraft>({ serviceId: initialServiceId, barberId: initialBarberId, date: localDate(), time: '', name: '', phone: '' })
+  const [step, setStep] = useState(initialServiceId && initialBarberId ? 2 : 1)
   const [slots, setSlots] = useState<string[]>([])
-  const [loadingSlots, setLoadingSlots] = useState(false)
+  const [loadingSlots, setLoadingSlots] = useState(Boolean(supabase && initialServiceId && initialBarberId))
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [complete, setComplete] = useState(false)
@@ -596,13 +572,14 @@ function BookingModal({ services, barbers, initialBarberId, onClose }: { service
             )}
             {step === 2 && (
               <div className="booking-step">
+                <div className="booking-summary"><span><Scissors size={16} /> {selectedService?.name} · {selectedBarber?.name}</span></div>
                 <label className="field-label" htmlFor="booking-date">Qual dia fica melhor?</label>
                 <input id="booking-date" type="date" min={today} value={draft.date} onChange={(event) => { select('date', event.target.value); select('time', ''); setLoadingSlots(Boolean(supabase)); setSlots([]); setError('') }} />
                 <label className="field-label">Horários disponíveis</label>
                 {loadingSlots ? <div className="slots-loading"><LoaderCircle size={17} className="spin" /> Consultando horários...</div> :
                   slots.length > 0 ? <div className="slot-grid">{slots.map((slot) => <button className={draft.time === slot ? 'slot selected' : 'slot'} key={slot} onClick={() => select('time', slot)}>{formatTime(slot)}</button>)}</div> :
                     <p className="empty-slots">{!supabaseConfigured ? 'A agenda ainda não está conectada. A consulta de horários e a confirmação de reservas serão liberadas após a configuração.' : error || 'Não há horários livres para este dia. Tente outra data.'}</p>}
-                <div className="step-actions"><button className="button button-quiet" onClick={() => setStep(1)}><ArrowLeft size={16} /> Voltar</button><button className="button button-dark" disabled={!draft.time} onClick={() => setStep(3)}>Continuar <ArrowRight size={16} /></button></div>
+                <div className="step-actions"><button className="button button-quiet" onClick={onClose}><ArrowLeft size={16} /> Alterar escolhas</button><button className="button button-dark" disabled={!draft.time} onClick={() => setStep(3)}>Continuar <ArrowRight size={16} /></button></div>
               </div>
             )}
             {step === 3 && (
